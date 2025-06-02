@@ -6,14 +6,26 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controllers/categoryController");
+const {
+  getCategoryValidator,
+  createCategoryValidator,
+  updateCategoryValidator,
+  deleteCategoryValidator,
+} = require("../utils/validators/categoryValidator");
+const subCategoryRoute = require("./subCategoryRoute");
 
 const router = express.Router();
 
-// /api/v1/categories  POST
-router.route("/").post(createCategory).get(getCategories);
+// Nested routes
+router.use("/:categoryId/subcategories", subCategoryRoute);
+
+router
+  .route("/")
+  .post(createCategoryValidator, createCategory)
+  .get(getCategories);
 router
   .route("/:id")
-  .get(getCategoryById)
-  .put(updateCategory)
-  .delete(deleteCategory);
+  .get(getCategoryValidator, getCategoryById)
+  .put(updateCategoryValidator, updateCategory)
+  .delete(deleteCategoryValidator, deleteCategory);
 module.exports = router;

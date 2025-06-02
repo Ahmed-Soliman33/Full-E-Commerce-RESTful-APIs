@@ -1,9 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
-const mongoose = require("mongoose");
 const dbConnection = require("./config/database");
+const ApiError = require("./utils/ApiError");
+const globalErrorHandler = require("./middlewares/errorMiddleware");
+
+// Routes imports
 const categoryRoute = require("./routes/categoryRoute");
+const brandRoute = require("./routes/brandRoute");
+const subCategoryRoute = require("./routes/subCategoryRoute");
 
 // Connect to the database
 dbConnection();
@@ -27,20 +32,31 @@ if (process.env.NODE_ENV === "development") {
 
 // Routes
 app.use("/api/v1/categories", categoryRoute);
+app.use("/api/v1/subcategories", subCategoryRoute);
+app.use("/api/v1/brands", brandRoute);
 
 // Catch-all route for undefined routes
 app.use((req, res, next) => {
-  const error = new Error(`Can't find ${req.originalUrl} on this server!`);
-  next(error.message);
+  const error = new ApiError(
+    `Can't find ${req.originalUrl} on this server!`,
+    400
+  );
+  next(error);
 });
 
 // Global Error handling middleware
-app.use((err, req, res, next) => {
-  res.status(400).json({
-    err,
-  });
+app.use(globalErrorHandler);
+
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
+// Handle unhandled promise (asynchronous) rejections outside express
+process.on("unhandledRejection", (err) => {
+  console.error(`Unhandled Rejection Error: ${err.name} | ${err.message}`);
+  // Close the server and exit the process
+  server.close(() => {
+    console.error("Shutting down...");
+    process.exit(1);
+  });
 });
