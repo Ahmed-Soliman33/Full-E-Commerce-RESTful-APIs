@@ -9,6 +9,7 @@ const globalErrorHandler = require("./middlewares/errorMiddleware");
 const categoryRoute = require("./routes/categoryRoute");
 const brandRoute = require("./routes/brandRoute");
 const subCategoryRoute = require("./routes/subCategoryRoute");
+const productRoute = require("./routes/productRoute");
 
 // Connect to the database
 dbConnection();
@@ -34,6 +35,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/subcategories", subCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
+app.use("/api/v1/products", productRoute);
 
 // Catch-all route for undefined routes
 app.use((req, res, next) => {
