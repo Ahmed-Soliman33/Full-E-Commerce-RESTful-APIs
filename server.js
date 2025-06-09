@@ -4,12 +4,7 @@ const morgan = require("morgan");
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
 const globalErrorHandler = require("./middlewares/errorMiddleware");
-
-// Routes imports
-const categoryRoute = require("./routes/categoryRoute");
-const brandRoute = require("./routes/brandRoute");
-const subCategoryRoute = require("./routes/subCategoryRoute");
-const productRoute = require("./routes/productRoute");
+const mountRoutes = require("./routes");
 
 // Connect to the database
 dbConnection();
@@ -31,11 +26,8 @@ if (process.env.NODE_ENV === "development") {
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
 
-// Routes
-app.use("/api/v1/categories", categoryRoute);
-app.use("/api/v1/subcategories", subCategoryRoute);
-app.use("/api/v1/brands", brandRoute);
-app.use("/api/v1/products", productRoute);
+// Mount Routes
+mountRoutes(app);
 
 // Catch-all route for undefined routes
 app.use((req, res, next) => {

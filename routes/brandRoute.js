@@ -12,14 +12,28 @@ const {
   updateBrandValidator,
   deleteBrandValidator,
 } = require("../utils/validators/brandValidator");
+const { protect, allowedTo } = require("../controllers/authController");
 
 const router = express.Router();
 
-router.route("/").post(createBrandValidator, createBrand).get(getBrands);
+router
+  .route("/")
+  .post(
+    protect,
+    allowedTo("admin", "manager"),
+    createBrandValidator,
+    createBrand
+  )
+  .get(getBrands);
 router
   .route("/:id")
   .get(getBrandValidator, getBrandById)
-  .put(updateBrandValidator, updateBrand)
-  .delete(deleteBrandValidator, deleteBrand);
+  .put(
+    protect,
+    allowedTo("admin", "manager"),
+    updateBrandValidator,
+    updateBrand
+  )
+  .delete(protect, allowedTo("admin"), deleteBrandValidator, deleteBrand);
 
 module.exports = router;

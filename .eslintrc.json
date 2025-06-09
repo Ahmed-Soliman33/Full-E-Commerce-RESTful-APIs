@@ -15,6 +15,8 @@
     "class-methods-use-this": "off",
     "node/no-unsupported-features/es-syntax": "off",
     "no-undef": "error",
+    "import/no-extraneous-dependencies": "off", // Allow devDependencies in import statements
+    "import/order": "off", // Disable import order rule
     "prefer-destructuring": ["off", { "object": true, "array": false }],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }]
   }

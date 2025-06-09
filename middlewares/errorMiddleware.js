@@ -1,13 +1,4 @@
-const globalErrorHandler = (err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-
-  if (process.env.NODE_ENV === "development") {
-    sendErrorDev(err, res);
-  } else {
-    sendErrorProd(err, res);
-  }
-};
+const ApiError = require("../utils/ApiError");
 
 // send error response based on environment
 const sendErrorDev = (err, res) => {
@@ -25,6 +16,22 @@ const sendErrorProd = (err, res) => {
     status: err.status,
     message: err.message,
   });
+};
+
+const globalErrorHandler = (err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || "error";
+
+  if (err.name === "JsonWebTokenError")
+    err = new ApiError("Invalid token, please log in again", 401);
+  if (err.name === "TokenExpiredError")
+    err = new ApiError("Token expired, please log in again", 401);
+
+  if (process.env.NODE_ENV === "development") {
+    sendErrorDev(err, res);
+  } else {
+    sendErrorProd(err, res);
+  }
 };
 
 module.exports = globalErrorHandler;
